@@ -1,11 +1,12 @@
+<#macro page>
 <!DOCTYPE HTML>
-<html>
+<html lang="en">
     <head>
-        <title>Hello World!</title>
+        <title>Talkie!</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     </head>
     <body>
-        <div>Hello, User</div>
-        <div><a href="/main">Main page</a></div>
+        <#nested>
     </body>
 </html>
+</#macro>
