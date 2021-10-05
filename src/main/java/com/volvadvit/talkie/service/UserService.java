@@ -4,13 +4,14 @@ import com.volvadvit.talkie.domain.Role;
 import com.volvadvit.talkie.domain.User;
 import com.volvadvit.talkie.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -29,10 +30,20 @@ public class UserService implements UserDetailsService {
         if (userFromDB != null) {
             return false;
         }
-        user.setActive(true);
+
+        user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
 
+        if (!sendVerifyEmail(user)) {
+            return false;
+        }
+
+        userRepo.save(user);
+        return true;
+    }
+
+    private boolean sendVerifyEmail(User user) {
         if (!user.getEmail().isEmpty()) {
             String message = String.format(
                     "Hello, %s! \n" +
@@ -41,11 +52,12 @@ public class UserService implements UserDetailsService {
                     user.getUsername(),
                     user.getActivationCode()
             );
-            mailSender.sendVerifyMail(user.getEmail(), "Activation Code", message);
-        }
 
-        userRepo.save(user);
-        return true;
+            mailSender.sendVerifyMail(user.getEmail(), "Activation Code", message);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public boolean activateUser(String code) {
@@ -54,7 +66,49 @@ public class UserService implements UserDetailsService {
             return false;
         }
         user.setActivationCode(null);
+        user.setActive(true);
         userRepo.save(user);
         return true;
+    }
+
+    public Iterable<User> findAll() {
+        return userRepo.findAll();
+    }
+
+    public void saveEditUser(User user, String username, Map<String, String> form) {
+        user.setUsername(username);
+
+        Set<String> roles = Arrays.stream(Role.values())
+                .map(Role::name)
+                .collect(Collectors.toSet());
+
+        user.getRoles().clear();
+
+        form.keySet().forEach(param -> {
+            if (roles.contains(param)) {
+                user.getRoles().add(Role.valueOf(param));
+            }
+        });
+
+        userRepo.save(user);
+    }
+
+    public void updateProfile(User user, String password, String email) {
+        if (email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
+            String userEmail = user.getEmail();
+
+            boolean isEmailChanged =  (userEmail != null && !email.equals(userEmail));
+
+            if (isEmailChanged) {
+                user.setEmail(email);
+                user.setActivationCode(UUID.randomUUID().toString());
+            }
+
+            userRepo.save(user);
+
+            if (isEmailChanged) {
+                sendVerifyEmail(user);
+            }
+        }
     }
 }

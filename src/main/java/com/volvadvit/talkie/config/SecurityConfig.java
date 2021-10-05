@@ -4,6 +4,7 @@ import com.volvadvit.talkie.domain.Role;
 import com.volvadvit.talkie.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,8 +23,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                     .antMatchers("/", "/registration", "/static/**", "/activate/*").permitAll()
-                    .antMatchers("/user").hasAuthority(Role.ADMIN.getAuthority())
-                    .anyRequest().authenticated()
+                    .antMatchers("/user/profile")
+                        .hasAuthority(Role.USER.getAuthority())
+                    .antMatchers(HttpMethod.GET, "/user", "/user/*")
+                        .hasAuthority(Role.ADMIN.getAuthority())
+                    .antMatchers(HttpMethod.POST, "/user", "/user/*")
+                        .hasAuthority(Role.ADMIN.getAuthority())
+                .anyRequest().authenticated()
                 .and()
                     .formLogin()
                     .loginPage("/login")

@@ -62,6 +62,7 @@ public class MainController {
             if (!uploadFileDir.exists()) {
                 uploadFileDir.mkdir();
             }
+
             String fileUUID = UUID.randomUUID().toString();
             String filename = fileUUID + "." + file.getOriginalFilename();
             message.setFilename(filename);
@@ -72,6 +73,7 @@ public class MainController {
 
         messageRepo.save(message);
 
+        // update message list (not recommended usage)
         Iterable<Message> messages = messageRepo.findAll();
         model.put("messages", messages);
         return "main";

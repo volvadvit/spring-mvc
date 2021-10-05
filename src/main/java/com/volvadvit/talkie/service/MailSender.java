@@ -14,12 +14,12 @@ public class MailSender {
     JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
-    private String username;
+    private String appOwnerEmail;
 
     @Async
     public void sendVerifyMail(String emailTo, String subject, String message) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setFrom(username);
+        mailMessage.setFrom(appOwnerEmail);
         mailMessage.setTo(emailTo);
         mailMessage.setSubject(subject);
         mailMessage.setText(message);

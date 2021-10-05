@@ -37,7 +37,6 @@
             <div>
                 <#if message.filename??>
                     <img class="card-img-top" src="/img/${message.filename}">
-                    <img class="card-img-top" src="/img/${message.filename}">
                 </#if>>
             </div>
             <div class="m-2">
@@ -49,7 +48,8 @@
         </div>
     </div>
 <#else>
-No messages
+
+<div>No messages</div>
 </#list>
 </div>
 </@c.page>
