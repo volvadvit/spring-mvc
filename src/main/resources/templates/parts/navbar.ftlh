@@ -16,14 +16,17 @@
                     <a class="nav-link active" aria-current="page" href="/main">Messages</a>
                 </li>
                 <#if user??>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/user/profile">Profile</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/messages/${name}">My messages</a>
+                    </li>
                 </#if>
                 <#if isAdmin>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/user">User List</a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/user">User List</a>
+                    </li>
                 </#if>
             </ul>
         </div>

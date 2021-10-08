@@ -17,9 +17,9 @@ public class User implements UserDetails {
     private long id;
     @NotBlank(message = "Username can't be empty!")
     private String username;
+
     @NotBlank(message = "Password can't be empty!")
     private String password;
-
     @Transient
     private String password2;
 
@@ -33,8 +33,19 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Message> messages;
+
     public boolean isAdmin(){
         return roles.contains(Role.ADMIN);
+    }
+
+    public Set<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Set<Message> messages) {
+        this.messages = messages;
     }
 
     public String getEmail() {

@@ -130,4 +130,13 @@ public class UserService implements UserDetailsService {
             return false;
         }
     }
+
+    public User getByUsername(String username) {
+        User byUsername = userRepo.findByUsername(username);
+        if (byUsername != null) {
+            return byUsername;
+        } else {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
+    }
 }
