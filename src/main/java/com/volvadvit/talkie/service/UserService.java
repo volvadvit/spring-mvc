@@ -8,6 +8,7 @@ import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -18,10 +19,17 @@ public class UserService implements UserDetailsService {
 
     @Autowired private UserRepo userRepo;
     @Autowired private MailSender mailSender;
+    @Autowired private PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepo.findByUsername(username);
+        User user = userRepo.findByUsername(username);
+
+        if (user == null) {
+            throw new UsernameNotFoundException("User not found: " + username);
+        }
+
+        return user;
     }
 
     public boolean addUser(User user) {
@@ -34,6 +42,7 @@ public class UserService implements UserDetailsService {
         user.setActive(false);
         user.setRoles(Collections.singleton(Role.USER));
         user.setActivationCode(UUID.randomUUID().toString());
+        encodeUserPassword(user);
 
         if (!sendVerifyEmail(user)) {
             return false;
@@ -41,6 +50,10 @@ public class UserService implements UserDetailsService {
 
         userRepo.save(user);
         return true;
+    }
+
+    private void encodeUserPassword(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
     private boolean sendVerifyEmail(User user) {
@@ -93,10 +106,10 @@ public class UserService implements UserDetailsService {
         userRepo.save(user);
     }
 
-    public void updateProfile(User user, String password, String email) {
+    public boolean updateProfile(User user, String password, String email) {
         if (email != null && !email.isEmpty() && password != null && !password.isEmpty()) {
-            String userEmail = user.getEmail();
 
+            String userEmail = user.getEmail();
             boolean isEmailChanged =  (userEmail != null && !email.equals(userEmail));
 
             if (isEmailChanged) {
@@ -104,11 +117,17 @@ public class UserService implements UserDetailsService {
                 user.setActivationCode(UUID.randomUUID().toString());
             }
 
+            user.setPassword(password);
+            encodeUserPassword(user);
+
             userRepo.save(user);
 
             if (isEmailChanged) {
                 sendVerifyEmail(user);
             }
+            return true;
+        } else {
+            return false;
         }
     }
 }

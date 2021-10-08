@@ -1,13 +1,20 @@
 package com.volvadvit.talkie.domain;
 
+import org.hibernate.validator.constraints.Length;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    @NotBlank(message = "Please, fill the message")
+    @Length(max = 2048, message = "Message too long! More than 2048")
     private String text;
+    @NotBlank(message = "Please, fill the tag")
+    @Length(max = 64, message = "Tag too long! More than 64")
     private String tag;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
