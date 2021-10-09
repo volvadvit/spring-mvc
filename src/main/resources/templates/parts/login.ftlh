@@ -53,22 +53,18 @@
     </#if>
     <div><input type="hidden" name="_csrf" value="${_csrf.token}"/></div>
     <#if isRegisterForm>
-        <button class="btn btn-primary" type="submit">Create</button>
-        <div class="btn btn-outline-secondary">
-            <a href="/login">Sign In</a>
-        </div>
+        <button class="btn btn-dark" style="background-color: #cc1f53" type="submit">Create</button>
+        <a class="btn btn-outline-dark" href="/login">Sign In</a>
     <#else>
-        <button class="btn btn-primary" type="submit">Login</button>
-        <div class="btn btn-outline-secondary">
-            <a href="/registration">Create new account</a>
-        </div>
+        <button class="btn btn-dark" style="background-color: #cc1f53" type="submit">Login</button>
+        <a class="btn btn-outline-dark" href="/registration">Create account</a>
     </#if>
 </form>
 </#macro>
 
 <#macro logout>
 <form action="/logout" method="post">
-    <button class="btn btn-outline-primary" type="submit">Change User</button>
+    <button class="btn" style="color: #cc1f53" type="submit">Change User</button>
     <input type="hidden" name="_csrf" value="${_csrf.token}"/>
 </form>
 </#macro>

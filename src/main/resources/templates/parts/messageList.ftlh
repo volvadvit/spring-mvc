@@ -1,12 +1,12 @@
 <#include "security.ftlh">
 <!-- Masonry -->
-<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
 
-<div class="grid" data-masonry='{ "itemSelector": ".grid-item", "columnWidth": 200 }'>
+    <div class="row row-cols-md-4" data-masonry='{"percentPosition": true }'>
     <#list messages as message>
-    <div class="grid-item">
-            <div class="card border-primary my-3">
-                <div class="card-header">
+        <div class="col-md-3">
+            <div class="card border-dark my-3">
+                <div class="card-header" style="color: #cc1f53">
                      #<i>${message.tag}</i>
                 </div>
                 <div>
@@ -20,13 +20,13 @@
                 <div class="card-footer text-muted">
                     <a href="/messages/${message.author.username}">${message.authorName}</a>
                     <#if message.author.id == currentUserId>
-                        <a class="btn btn-outline-danger" href="/messages?message=${message.id}">
+                        <a class="btn btn-outline-danger ms-2" href="/messages?message=${message.id}">
                             Edit
                         </a>
                     </#if>
                 </div>
             </div>
-    </div>
+        </div>
     <#else>
         <div>No messages</div>
     </#list>
