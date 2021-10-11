@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -15,6 +16,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
+
     @NotBlank(message = "Username can't be empty!")
     private String username;
 
@@ -24,10 +26,12 @@ public class User implements UserDetails {
     private String password2;
 
     private boolean active;
+
     @Email(message = "Email is not correct!")
     @NotBlank(message = "Email can't be empty!")
     private String email;
     private String activationCode;
+
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
@@ -36,8 +40,66 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Message> messages;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_subscriptions",
+            joinColumns = { @JoinColumn(name = "channel_id") },
+            inverseJoinColumns = { @JoinColumn(name = "subscriber_id") }
+    )
+    private Set<User> subscribers = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "subscribers")
+    private Set<User> subscriptions = new HashSet<>();
+
     public boolean isAdmin(){
         return roles.contains(Role.ADMIN);
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isActive();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return getRoles();
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = (int) (31 * result + id);
+        result = 31 * result + username.hashCode();
+        result = 31 * result + email.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof User)) {
+            return false;
+        }
+
+        User user = (User) o;
+
+        return user.id == this.id &&
+                user.username.equals(this.username);
     }
 
     public Set<Message> getMessages() {
@@ -88,31 +150,6 @@ public class User implements UserDetails {
         this.username = username;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isActive();
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
-    }
-
     public String getPassword() {
         return password;
     }
@@ -135,5 +172,21 @@ public class User implements UserDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public Set<User> getSubscribers() {
+        return subscribers;
+    }
+
+    public void setSubscribers(Set<User> subscribers) {
+        this.subscribers = subscribers;
+    }
+
+    public Set<User> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(Set<User> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 }

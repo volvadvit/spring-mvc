@@ -1,12 +1,11 @@
 <#import "/parts/common.ftlh" as c>
 <@c.page>
-    <h5>Edit message</h5>
-
+    <h5>Edit message</h5></br>
     <p>
-        <button class="btn btn-success" type="button"
+        <button class="btn btn-info" type="button"
                 data-bs-toggle="collapse" data-bs-target="#addNewMessage"
                 aria-expanded="false" aria-controls="addNewMessage">
-            Edit message
+            Show edit form
         </button>
     </p>
 
@@ -34,7 +33,7 @@
                 <div><input type="file" name="file"></div>
                 <div><input type="hidden" name="_csrf" value="${_csrf.token}"/></div>
                 <div><input type="hidden" name="id" value="<#if message??>${message.id}</#if>"/></div>
-                <div><button class="btn btn-success" type="submit">Save</button></div>
+                <div><button class="btn btn-info" type="submit">Save</button></div>
             </form>
         </div>
     </div>

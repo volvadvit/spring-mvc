@@ -1,6 +1,6 @@
 <#import "/parts/common.ftlh" as c>
 <@c.page>
-<div class="form-row my-2">
+<div align="center" class="form-row my-2">
     <div class="form-group col-md-4">
         <form class="form-inline" method="get" action="/main">
             <input type="text" name="filter" placeholder="Search by tag" value="${filter!""}">

@@ -18,7 +18,7 @@
                     <p class="card-text">${message.text}</p>
                 </div>
                 <div class="card-footer text-muted">
-                    <a href="/messages/${message.author.username}">${message.authorName}</a>
+                    <a class="btn btn-outline-info" href="/messages/${message.author.username}">${message.authorName}</a>
                     <#if message.author.id == currentUserId>
                         <a class="btn btn-outline-danger ms-2" href="/messages?message=${message.id}">
                             Edit

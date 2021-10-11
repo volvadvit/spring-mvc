@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -137,6 +138,38 @@ public class UserService implements UserDetailsService {
             return byUsername;
         } else {
             throw new UsernameNotFoundException("User not found: " + username);
+        }
+    }
+
+    public void subscribe(User currentUser, String username) {
+        User channel = userRepo.findByUsername(username);
+        if (channel != null) {
+            boolean isSubscribed = currentUser.getSubscriptions().contains(channel);
+            if (!isSubscribed) {
+                channel.getSubscribers().add(currentUser);
+                currentUser.getSubscriptions().add(channel);
+                userRepo.save(currentUser);
+            } else {
+                System.err.println("User already subscribed on channel");
+            }
+        } else {
+            System.err.println("User not found: " + username);
+        }
+    }
+
+    public void unsubscribe(User currentUser, String username) {
+        User channel = userRepo.findByUsername(username);
+        if (channel != null) {
+            boolean isSubscribed = currentUser.getSubscriptions().contains(channel);
+            if (isSubscribed) {
+                channel.getSubscribers().remove(currentUser);
+                currentUser.getSubscriptions().remove(channel);
+                userRepo.save(currentUser);
+            } else {
+                System.err.println("User not subscribed on channel");
+            }
+        } else {
+            System.err.println("User not found: " + username);
         }
     }
 }

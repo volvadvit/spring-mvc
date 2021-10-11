@@ -31,17 +31,21 @@ public class MessageController {
     @GetMapping("/{username}")
     public String getUserMessages(@AuthenticationPrincipal User user,
                                   @PathVariable String username, Model model) {
-        User userByPath = userService.getByUsername(username);
+        User userByRequest = userService.getByUsername(username);
 
-        Set<Message> messages = userByPath.getMessages();
+        Set<Message> messages = userByRequest.getMessages();
         model.addAttribute("messages", messages);
+        model.addAttribute("username", username);
+        model.addAttribute("subscriptionsCount", userByRequest.getSubscriptions().size());
+        model.addAttribute("subscribersCount", userByRequest.getSubscribers().size());
 
         if (Objects.equals(user.getUsername(), username)) {
-            model.addAttribute("username", "mine");
+            model.addAttribute("isSubscriber", false);
             model.addAttribute("isCurrentUser", true);
             return "userMessages";
-        } else if (userByPath.getId() != -1) {
-            model.addAttribute("username", username);
+        } else if (userByRequest.getId() != -1) {
+            boolean isSubscriber = user.getSubscriptions().contains(userByRequest);
+            model.addAttribute("isSubscriber", isSubscriber);
             model.addAttribute("isCurrentUser", false);
             return "userMessages";
         } else {

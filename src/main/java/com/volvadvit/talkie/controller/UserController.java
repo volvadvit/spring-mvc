@@ -59,4 +59,29 @@ public class UserController {
             return "redirect:/registration";
         }
     }
+
+    @GetMapping("/subscribe/{username}")
+    public String subscribe(@AuthenticationPrincipal User user, @PathVariable String username) {
+        userService.subscribe(user, username);
+        return "redirect:/messages/" + username;
+    }
+
+    @GetMapping("/unsubscribe/{username}")
+    public String unsubscribe(@AuthenticationPrincipal User user, @PathVariable String username) {
+        userService.unsubscribe(user, username);
+        return "redirect:/messages/" + username;
+    }
+
+    @GetMapping("/{type}/{username}/list")
+    public String userSubscriptionsList(@PathVariable String type, @PathVariable String username, Model model) {
+        User requestUser = userService.getByUsername(username);
+        if (type.equals("subscribers")) {
+            model.addAttribute("users", requestUser.getSubscribers());
+        } else {
+            model.addAttribute("users", requestUser.getSubscriptions());
+        }
+        model.addAttribute("type", type);
+        model.addAttribute("username", username);
+        return "subscriptions";
+    }
 }

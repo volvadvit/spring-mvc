@@ -33,7 +33,7 @@
         <#if user??>
             <div class="navbar-text me-3">${name}</div>
         <#else>
-            <div class="navbar-text me-3">To start talkie</div>
+            <div class="navbar-text me-3">To start talkie -> </div>
         </#if>
         <@l.logout/>
     </div>
