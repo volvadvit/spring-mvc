@@ -8,11 +8,11 @@
  - **Подписки** на пользователей,
  - Все данные хранятся в базе
 
-#Tools
 _________
+# Tools
 Spring (Boot, Web, Security, Data, Mail, Validation), MySQL, Freemarker, Bootstrap, FlyWay 
 
-#Launch
 _________
+# Launch
 Локлаьно запускается по адрессу http://localhost:8080/
 База данных, по умолчнию mysql://localhost:3306/db_talkie
