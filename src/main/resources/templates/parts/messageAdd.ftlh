@@ -29,7 +29,7 @@
             <label for="file">1Mb max!</label>
             <div id="file"><input type="file" name="file"></div>
             <div><input type="hidden" name="_csrf" value="${_csrf.token}"/></div>
-            <div><input type="hidden" name="id" value="<#if message??>${message.id!null}</#if>"/></div>
+            <div><input type="hidden" name="id" value="<#if message??>${message.id!""}</#if>"/></div>
             <div><button class="btn btn-success" type="submit">Post</button></div>
         </form>
     </div>
