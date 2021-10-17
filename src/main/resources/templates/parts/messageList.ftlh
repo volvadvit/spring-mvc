@@ -24,12 +24,13 @@
                         <a class="col align-self-start btn btn-outline-info" href="/messages/${message.author.username}">
                             ${message.authorName}
                         </a>
-                        <a class="col align-self-center btn btn-outline-info" href="#">
-                            <#if true>
-                                <i class="far fa-heart"></i>
-                            <#else>
+                        <a class="col align-self-center btn btn-outline-info" href="/messages/${message.id}/like">
+                            <#if message.meLiked>
                                 <i class="fas fa-heart"></i>
+                            <#else>
+                                <i class="far fa-heart"></i>
                             </#if>
+                            ${message.likes}
                         </a>
                        <#if message.author.id == currentUserId>
                             <a class="col btn btn-outline-danger ms-2" href="/messages?message=${message.id}">

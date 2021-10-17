@@ -3,8 +3,10 @@ package com.volvadvit.talkie.controller;
 import com.volvadvit.talkie.controller.utils.ControllerUtils;
 import com.volvadvit.talkie.domain.Message;
 import com.volvadvit.talkie.domain.User;
+import com.volvadvit.talkie.domain.dto.MessageDTO;
 import com.volvadvit.talkie.repository.MessageRepo;
 import com.volvadvit.talkie.service.FileUploadService;
+import com.volvadvit.talkie.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +26,10 @@ import java.io.IOException;
 import java.util.Map;
 
 @Controller
-public class MainController {
+public class MainPageController {
 
     @Autowired private MessageRepo messageRepo;
+    @Autowired private MessageService messageService;
     @Autowired private FileUploadService fileUploadService;
 
     @GetMapping("/")
@@ -35,18 +38,14 @@ public class MainController {
     }
 
     @GetMapping("/main")
-    public String main(
+    public String getMainMessagePage(
+            @AuthenticationPrincipal User user,
             @RequestParam(required = false) String filter,
             Model model,
             @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        Page<Message> page;
+        Page<MessageDTO> page = messageService.getPageableMessageList(pageable, filter, user);
 
-        if (filter != null && !filter.isEmpty()) {
-            page = messageRepo.findByTag(filter, pageable);
-        } else {
-            page = messageRepo.findAll(pageable);
-        }
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         model.addAttribute("filter", filter);
@@ -74,8 +73,9 @@ public class MainController {
             model.addAttribute("message", null);
             messageRepo.save(message);
         }
-        // update message list (not recommended usage)
-        Page<Message> page = messageRepo.findAll(pageable);
+
+        // update message list
+        Page<MessageDTO> page = messageService.getPageableMessageList(pageable, null, user);
         model.addAttribute("page", page);
         model.addAttribute("url", "/main");
         return "main";

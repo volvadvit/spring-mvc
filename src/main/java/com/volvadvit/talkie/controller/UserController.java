@@ -15,8 +15,7 @@ import java.util.Map;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    UserService userService;
+    @Autowired private UserService userService;
 
     @GetMapping
     public String userList(Model model) {

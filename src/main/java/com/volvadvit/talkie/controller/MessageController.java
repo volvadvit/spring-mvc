@@ -3,8 +3,10 @@ package com.volvadvit.talkie.controller;
 import com.volvadvit.talkie.controller.utils.ControllerUtils;
 import com.volvadvit.talkie.domain.Message;
 import com.volvadvit.talkie.domain.User;
+import com.volvadvit.talkie.domain.dto.MessageDTO;
 import com.volvadvit.talkie.repository.MessageRepo;
 import com.volvadvit.talkie.service.FileUploadService;
+import com.volvadvit.talkie.service.MessageService;
 import com.volvadvit.talkie.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,6 +19,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -28,8 +33,9 @@ import java.util.Set;
 @RequestMapping("/messages")
 public class MessageController {
 
-    @Autowired UserService userService;
+    @Autowired private UserService userService;
     @Autowired private MessageRepo messageRepo;
+    @Autowired private MessageService messageService;
     @Autowired private FileUploadService fileUploadService;
 
     @GetMapping("/{username}")
@@ -39,21 +45,21 @@ public class MessageController {
             Model model,
             @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        User userByRequest = userService.getByUsername(username);
-        Page<Message> messages = messageRepo.findByAuthor(userByRequest, pageable);
+        User author = userService.getByUsername(username);
+        Page<MessageDTO> messages = messageService.getUserMessageList(pageable, user, author);
 
         model.addAttribute("page", messages);
         model.addAttribute("username", username);
-        model.addAttribute("subscriptionsCount", userByRequest.getSubscriptions().size());
-        model.addAttribute("subscribersCount", userByRequest.getSubscribers().size());
+        model.addAttribute("subscriptionsCount", author.getSubscriptions().size());
+        model.addAttribute("subscribersCount", author.getSubscribers().size());
         model.addAttribute("url", "/messages/" + username);
 
         if (Objects.equals(user.getUsername(), username)) {
             model.addAttribute("isSubscriber", false);
             model.addAttribute("isCurrentUser", true);
             return "userMessages";
-        } else if (userByRequest.getId() != -1) {
-            boolean isSubscriber = user.getSubscriptions().contains(userByRequest);
+        } else if (author.getId() != -1) {
+            boolean isSubscriber = user.getSubscriptions().contains(author);
             model.addAttribute("isSubscriber", isSubscriber);
             model.addAttribute("isCurrentUser", false);
             return "userMessages";
@@ -63,10 +69,10 @@ public class MessageController {
     }
 
     @GetMapping()
-    public String editUserMessage(
-            @AuthenticationPrincipal User user,
-            @RequestParam("message") Long messageId,
-                                  Model model) {
+    public String getEditUserMessageForm(@AuthenticationPrincipal User user,
+                                        @RequestParam("message") Long messageId,
+                                        Model model
+    ) {
         Message message = messageRepo.findById(messageId).orElseThrow(
                 () -> new IllegalArgumentException("Message not found"));
         model.addAttribute("message", message);
@@ -92,5 +98,19 @@ public class MessageController {
         }
         model.addAttribute("username", user.getUsername());
         return "messageEdit";
+    }
+
+    @GetMapping("/{message}/like")
+    public String updateMessageLike(@AuthenticationPrincipal User user,
+                                    @PathVariable Message message,
+                                    RedirectAttributes redirectAttributes,
+                                    @RequestHeader(required = false) String referer
+    ) {
+        message = messageService.updateLikes(user, message);
+
+        UriComponents components = UriComponentsBuilder.fromHttpUrl(referer).build();
+        components.getQueryParams().forEach(redirectAttributes::addAttribute);
+
+        return "redirect:" + components.getPath();
     }
 }
