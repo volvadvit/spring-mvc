@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired private UserService userService;
     @Autowired private PasswordEncoder passwordEncoder;
@@ -35,6 +35,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .loginPage("/login")
                     .permitAll()
                     .defaultSuccessUrl("/main")
+                .and()
+                    .rememberMe().key("uniqueAndSecret").tokenValiditySeconds(86400)
                 .and()
                     .logout()
                     .permitAll();

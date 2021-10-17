@@ -2,7 +2,8 @@
 <@c.page>
     <h5>Edit message</h5></br>
     <p>
-        <button class="btn btn-info" type="button"
+        <button class="btn btn-dark" type="button"
+                style="background-color: #cc1f53"
                 data-bs-toggle="collapse" data-bs-target="#addNewMessage"
                 aria-expanded="false" aria-controls="addNewMessage">
             Show edit form
@@ -30,10 +31,11 @@
                         </div>
                     </#if>
                 </div>
-                <div><input type="file" name="file"></div>
+                <label for="file">1Mb max!</label>
+                <div id="file"><input type="file" name="file"></div>
                 <div><input type="hidden" name="_csrf" value="${_csrf.token}"/></div>
                 <div><input type="hidden" name="id" value="<#if message??>${message.id}</#if>"/></div>
-                <div><button class="btn btn-info" type="submit">Save</button></div>
+                <div><button class="btn btn-success" type="submit">Save</button></div>
             </form>
         </div>
     </div>

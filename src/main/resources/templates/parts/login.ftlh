@@ -50,8 +50,16 @@
                 </#if>
             </div>
         </div>
+        <br/>
+        <div class="col-sm-10">
+            <div class="g-recaptcha" data-sitekey="6Ld_ldUcAAAAAIhzpJ7oULqBNBKuoiX5zxd_gXvX"></div>
+            <#if captchaError??>
+                <p class="text-danger">${captchaError}</p>
+            </#if>
+        </div>
     </#if>
     <div><input type="hidden" name="_csrf" value="${_csrf.token}"/></div>
+    <br/>
     <#if isRegisterForm>
         <button class="btn btn-dark" style="background-color: #cc1f53" type="submit">Create</button>
         <a class="btn btn-outline-dark" href="/login">Sign In</a>
@@ -62,9 +70,9 @@
 </form>
 </#macro>
 
+
 <#macro logout>
 <#include "security.ftlh">
-
 <form action="/logout" method="post">
     <button class="btn" style="color: #cc1f53" type="submit">
         <#if user??>

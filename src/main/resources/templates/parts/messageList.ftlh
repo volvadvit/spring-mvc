@@ -1,9 +1,11 @@
 <#include "security.ftlh">
+<#import "pager.ftlh" as p>
 <!-- Masonry -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/masonry/4.2.2/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
 
-    <div class="row row-cols-md-4" data-masonry='{"percentPosition": true }'>
-    <#list messages as message>
+<@p.pager url page />
+<div class="row row-cols-md-4" data-masonry='{"percentPosition": true }'>
+    <#list page.content as message>
         <div class="col-md-3">
             <div class="card border-dark my-3">
                 <div class="card-header" style="color: #cc1f53">
@@ -17,13 +19,24 @@
                 <div class="m-2">
                     <p class="card-text">${message.text}</p>
                 </div>
-                <div class="card-footer text-muted">
-                    <a class="btn btn-outline-info" href="/messages/${message.author.username}">${message.authorName}</a>
-                    <#if message.author.id == currentUserId>
-                        <a class="btn btn-outline-danger ms-2" href="/messages?message=${message.id}">
-                            Edit
+                <div class="card-footer text-muted container">
+                    <div class="row">
+                        <a class="col align-self-start btn btn-outline-info" href="/messages/${message.author.username}">
+                            ${message.authorName}
                         </a>
-                    </#if>
+                        <a class="col align-self-center btn btn-outline-info" href="#">
+                            <#if true>
+                                <i class="far fa-heart"></i>
+                            <#else>
+                                <i class="fas fa-heart"></i>
+                            </#if>
+                        </a>
+                       <#if message.author.id == currentUserId>
+                            <a class="col btn btn-outline-danger ms-2" href="/messages?message=${message.id}">
+                                Edit
+                            </a>
+                        </#if>
+                    </div>
                 </div>
             </div>
         </div>

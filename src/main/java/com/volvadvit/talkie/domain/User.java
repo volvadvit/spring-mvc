@@ -38,7 +38,7 @@ public class User implements UserDetails {
     private Set<Role> roles;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private Set<Message> messages;
+    transient private Set<Message> messages;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -78,28 +78,6 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return getRoles();
-    }
-
-    @Override
-    public int hashCode() {
-        int result = 17;
-        result = (int) (31 * result + id);
-        result = 31 * result + username.hashCode();
-        result = 31 * result + email.hashCode();
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof User)) {
-            return false;
-        }
-
-        User user = (User) o;
-
-        return user.id == this.id &&
-                user.username.equals(this.username);
     }
 
     public Set<Message> getMessages() {

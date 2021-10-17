@@ -2,14 +2,17 @@
 <!DOCTYPE HTML>
 <html lang="en">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>Talkie!</title>
-        <link rel="stylesheet" href="/static/style.css">
-
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+        <link rel="stylesheet" href="/static/style.css">
+        <link rel="shortcut icon" href="/favicon.ico">
+        <!-- Font Awesome -->
+        <script src="https://kit.fontawesome.com/c78060fc81.js" crossorigin="anonymous"></script>
         <!-- Bootstrap CSS -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
+        <!-- reCaptcha -->
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     </head>
     <body>
         <#include "navbar.ftlh">

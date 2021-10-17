@@ -7,6 +7,10 @@ import com.volvadvit.talkie.repository.MessageRepo;
 import com.volvadvit.talkie.service.FileUploadService;
 import com.volvadvit.talkie.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,15 +33,20 @@ public class MessageController {
     @Autowired private FileUploadService fileUploadService;
 
     @GetMapping("/{username}")
-    public String getUserMessages(@AuthenticationPrincipal User user,
-                                  @PathVariable String username, Model model) {
+    public String getUserMessages(
+            @AuthenticationPrincipal User user,
+            @PathVariable String username,
+            Model model,
+            @PageableDefault(sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+    ) {
         User userByRequest = userService.getByUsername(username);
+        Page<Message> messages = messageRepo.findByAuthor(userByRequest, pageable);
 
-        Set<Message> messages = userByRequest.getMessages();
-        model.addAttribute("messages", messages);
+        model.addAttribute("page", messages);
         model.addAttribute("username", username);
         model.addAttribute("subscriptionsCount", userByRequest.getSubscriptions().size());
         model.addAttribute("subscribersCount", userByRequest.getSubscribers().size());
+        model.addAttribute("url", "/messages/" + username);
 
         if (Objects.equals(user.getUsername(), username)) {
             model.addAttribute("isSubscriber", false);
@@ -54,7 +63,9 @@ public class MessageController {
     }
 
     @GetMapping()
-    public String editUserMessage(@AuthenticationPrincipal User user, @RequestParam("message") Long messageId,
+    public String editUserMessage(
+            @AuthenticationPrincipal User user,
+            @RequestParam("message") Long messageId,
                                   Model model) {
         Message message = messageRepo.findById(messageId).orElseThrow(
                 () -> new IllegalArgumentException("Message not found"));
